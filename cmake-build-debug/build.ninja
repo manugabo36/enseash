@@ -46,8 +46,8 @@ cmake_ninja_workdir = /Users/anny-laure/CLionProjects/enseash/cmake-build-debug/
 
 build cmake_object_order_depends_target_enseash: phony || CMakeFiles/enseash.dir
 
-build CMakeFiles/enseash.dir/Question2.c.o: C_COMPILER__enseash_Debug /Users/anny-laure/CLionProjects/enseash/Question2.c || cmake_object_order_depends_target_enseash
-  DEP_FILE = CMakeFiles/enseash.dir/Question2.c.o.d
+build CMakeFiles/enseash.dir/Question4.c.o: C_COMPILER__enseash_Debug /Users/anny-laure/CLionProjects/enseash/Question4.c || cmake_object_order_depends_target_enseash
+  DEP_FILE = CMakeFiles/enseash.dir/Question4.c.o.d
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.1.sdk -mmacosx-version-min=11.7 -std=gnu99
   OBJECT_DIR = CMakeFiles/enseash.dir
   OBJECT_FILE_DIR = CMakeFiles/enseash.dir
@@ -60,7 +60,7 @@ build CMakeFiles/enseash.dir/Question2.c.o: C_COMPILER__enseash_Debug /Users/ann
 #############################################
 # Link the executable enseash
 
-build enseash: C_EXECUTABLE_LINKER__enseash_Debug CMakeFiles/enseash.dir/Question2.c.o
+build enseash: C_EXECUTABLE_LINKER__enseash_Debug CMakeFiles/enseash.dir/Question4.c.o
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.1.sdk -mmacosx-version-min=11.7
   OBJECT_DIR = CMakeFiles/enseash.dir
   POST_BUILD = :
