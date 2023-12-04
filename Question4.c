@@ -36,19 +36,12 @@ int main() {
         }
 
 
-        char code[100];
-        char* message;
-        wait(&status);
+        while((fpid = wait(&status)) != -1) {
 
-       if(WIFEXITED(status)){
-            sprintf(code,"%d",WEXITSTATUS(status));
-            char *message = strcat("enseash [exit",strcat(code,"] % "));
+            if(WIFEXITED(status)) {
+                fprintf(stdout,"enseash [code:%d] % ", WEXITSTATUS(status));}
+            else if (WIFSIGNALED(status)) {
+                fprintf(stdout,"enseash [sign:%d] % ", WTERMSIG(status));}
         }
-        else if (WIFSIGNALED(status)){
-            sprintf(code,"%d",WTERMSIG(status));
-            char *message = strcat("enseash [exit",strcat(code,"] % "));
-        }
-        write(1,message,strlen(message));
-
     }
 }
