@@ -4,52 +4,73 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <time.h>
-
 
 int main() {
-
-    struct timespec* TIME;
-    time_t milli;
-    clock_gettime(CLOCK_REALTIME,TIME);
-    milli = TIME->tv_sec*1000;
-    write(1,"\nBienvenue dans le Shell ENSEA\nPour quitter, tapez 'exit'.\n",strlen ("\nBienvenue dans le Shell ENSEA\nPour quitter, tapez 'exit'.\n"));
+    char welcomeMsg[] = "\nBienvenue dans le Shell ENSEA\nPour quitter, tapez 'exit'.\n";
+    write(1, welcomeMsg, strlen(welcomeMsg));
     //write the Welcome message
 
-
-    char* input;
+    char input[100];
     int status;
     pid_t fpid;
+    char prompt[] = "enseash % ";
+    char tryAgain[] = "Try again\n";
+    char output[100];
+    int ChildRun = 0;
 
-
-    write(1,"enseash % ",strlen("enseash % "));
-    while(1){
+    while(1) {
         //write a different message depending on the input message
 
-        scanf("%s",input);
-        if(strcmp(input,"fortune")==0){
-            write(1,"Today is what happened to yesterday\n",strlen("Today is what happened to yesterday\n"));
-            fpid=fork();
+        write(1, prompt, strlen(prompt));
+        scanf("%s", input);
 
+        if (strcmp(input, "fortune") == 0) {
+            // child process
+            fpid = fork();
+            if (fpid == 0) {
+                char fortune[] = "Today is what happened to yesterday\n";
+                write(1, fortune, strlen(fortune));
+                exit(0); // End the child process with exit code 0
+            }
+            else if (fpid > 0) {
+                ChildRun = 1;
+            }
         }
-        else if (strcmp(input,"exit")==0) { //quit the shell if the command is exit
-            exit(0);
+        else if (strcmp(input, "exit") == 0) {
+            sprintf(output, "enseash [code:0] % ");
+            write(1, output, strlen(output));
+            exit(0); //quit the shell if the command is "exit"
         }
-        else{
-            write(1 ,"Try again \n", strlen("Try again \n"));
-            fpid=fork();
-
+        else {
+            if (strcmp(input, "ls") == 0) { // Check if the command input is ls
+                fpid = fork();
+                if (fpid == 0) {
+                    execlp("/bin/ls", "ls", (char *)NULL);
+                    exit(1); // code if there is an error computed
+                }
+                else if (fpid > 0) {
+                    ChildRun = 1;
+                }
+            } else {
+                // Unknow command inputted
+                write(1, tryAgain, strlen(tryAgain));
+            }
         }
 
 
-        while((fpid = wait(&status)) != -1) {
-            clock_gettime(CLOCK_REALTIME,TIME);
-            milli = TIME->tv_sec*1000-milli;
-
-            if(WIFEXITED(status)) {
-                fprintf(stdout,"enseash [code:%d|%f ms] % ", WEXITSTATUS(status));}
+        // Wait for all child process to end
+        while ((fpid = wait(&status)) > 0) {
+            ChildRun = 0;
+            if (WIFEXITED(status)) {
+                int exit_status = WEXITSTATUS(status);
+                sprintf(output, "enseash [code:%d] % ", exit_status);
+                write(1, output, strlen(output));
+            }
             else if (WIFSIGNALED(status)) {
-                fprintf(stdout,"enseash [sign:%d|%f] % ", WTERMSIG(status));}
+                int exit_signal = WTERMSIG(status);
+                sprintf(output, "enseash [sign:%d] % ", exit_signal);
+                write(1, output, strlen(output));
+            }
         }
     }
 }
