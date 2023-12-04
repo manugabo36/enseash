@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <time.h>
 
 int main() {
     char welcomeMsg[] = "\nBienvenue dans le Shell ENSEA\nPour quitter, tapez 'exit'.\n";
@@ -17,15 +18,18 @@ int main() {
     char tryAgain[] = "Try again\n";
     char output[100];
     int ChildRun = 0;
+    struct timespec begin, end;
+    long millis;
+
 
     while(1) {
         //write a different message depending on the input message
-
         write(1, prompt, strlen(prompt));
         scanf("%s", input);
 
         if (strcmp(input, "fortune") == 0) {
             // child process
+            clock_gettime(CLOCK_MONOTONIC, &begin);
             fpid = fork();
             if (fpid == 0) {
                 char fortune[] = "Today is what happened to yesterday\n";
@@ -43,6 +47,7 @@ int main() {
         }
         else {
             if (strcmp(input, "ls") == 0) { // Check if the command input is ls
+                clock_gettime(CLOCK_MONOTONIC, &begin);
                 fpid = fork();
                 if (fpid == 0) {
                     execlp("/bin/ls", "ls", (char *)NULL);
@@ -52,23 +57,24 @@ int main() {
                     ChildRun = 1;
                 }
             } else {
-                // Unknow command inputted
+                // Unknown command inputted
                 write(1, tryAgain, strlen(tryAgain));
             }
         }
 
-
         // Wait for all child process to end
         while ((fpid = wait(&status)) > 0) {
+            clock_gettime(CLOCK_MONOTONIC, &end);
+            millis = (end.tv_sec - begin.tv_sec) * 1000 + (end.tv_nsec - begin.tv_nsec) / 1000000;
             ChildRun = 0;
             if (WIFEXITED(status)) {
                 int exit_status = WEXITSTATUS(status);
-                sprintf(output, "enseash [code:%d] % ", exit_status);
+                sprintf(output, "enseash [code:%d|%ldms] % ", exit_status, millis);
                 write(1, output, strlen(output));
             }
             else if (WIFSIGNALED(status)) {
                 int exit_signal = WTERMSIG(status);
-                sprintf(output, "enseash [sign:%d] % ", exit_signal);
+                sprintf(output, "enseash [sign:%d|%ldms] % ", exit_signal, millis);
                 write(1, output, strlen(output));
             }
         }
