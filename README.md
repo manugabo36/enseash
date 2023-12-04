@@ -65,27 +65,25 @@ the exit code with `WEXITSTATUS(status)` (or the signal code with `WTERMSIG(stat
 
 Add the execution time of the previous command in the prompt. 
 
-We can use the `struct timespec` defined in `time.h`. It gives us the time with the seconds and the nanoseconds. We only need the nanoseconds this time because we only run simple and short programs.
+We can use the `struct timespec` defined in `time.h`. It gives us the time with the seconds and the nanoseconds.
 
-        struct timespec time;
-        double milli = 0;       //initialize milliseconds timer
-        while(1) {
-        
-        	[...]		//exectute program, duplicate process
-        
-        	if (clock_gettime(CLOCK_REALTIME, &time) == -1) { //clock_gettime error
-            		perror("clock gettime");
-            		return EXIT_FAILURE;
-        	}
-        	milli = (double) (time.tv_nsec - milli) / (double) 1000000L; //milliseconds timer update
+    struct timespec begin, end;
+    long millis;       //initialize milliseconds timer
+    while(1) {
+
+    	clock_gettime(CLOCK_MONOTONIC, &begin);
+            [...]		//exectute program, duplicate process
+
+    	clock_gettime(CLOCK_MONOTONIC, &end);
+       	millis = (end.tv_sec - begin.tv_sec) * 1000 + (end.tv_nsec - begin.tv_nsec) / 1000000; //milliseconds timer update
         	
-        	while((fpid = wait(&status)) != -1) {	//prompt
-        		if(WIFEXITED(status)) {
-            			fprintf(stdout,"enseash [code:%d|%6.0f ms] % ", WEXITSTATUS(status),milli);}
-        			else if (WIFSIGNALED(status)) {
-            			fprintf(stdout,"enseash [sign:%d|%6.0f ms] % ", WTERMSIG(status),milli);}
-    		}
-        }
+       	while((fpid = wait(&status)) != -1) {	//prompt
+       		if(WIFEXITED(status)) {
+           			fprintf(stdout,"enseash [code:%d|%ld ms] % ", WEXITSTATUS(status),millis);}
+       			else if (WIFSIGNALED(status)) {
+          			fprintf(stdout,"enseash [sign:%d|%ld ms] % ", WTERMSIG(status),millis);}
+    	}
+    }
 
 
 ***
