@@ -65,6 +65,7 @@ int main() {
         // Wait for all child process to end
         while ((fpid = wait(&status)) > 0) {
             clock_gettime(CLOCK_MONOTONIC, &end);
+            // Give the duration of the process in ms
             millis = (end.tv_sec - begin.tv_sec) * 1000 + (end.tv_nsec - begin.tv_nsec) / 1000000;
             ChildRun = 0;
             if (WIFEXITED(status)) {
