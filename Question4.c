@@ -4,10 +4,15 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <time.h>
 
 
 int main() {
 
+    struct timespec* TIME;
+    time_t milli;
+    clock_gettime(CLOCK_REALTIME,TIME);
+    milli = TIME->tv_sec*1000;
     write(1,"\nBienvenue dans le Shell ENSEA\nPour quitter, tapez 'exit'.\n",strlen ("\nBienvenue dans le Shell ENSEA\nPour quitter, tapez 'exit'.\n"));
     //write the Welcome message
 
@@ -15,6 +20,7 @@ int main() {
     char* input;
     int status;
     pid_t fpid;
+
 
     write(1,"enseash % ",strlen("enseash % "));
     while(1){
@@ -37,11 +43,13 @@ int main() {
 
 
         while((fpid = wait(&status)) != -1) {
+            clock_gettime(CLOCK_REALTIME,TIME);
+            milli = TIME->tv_sec*1000-milli;
 
             if(WIFEXITED(status)) {
-                fprintf(stdout,"enseash [code:%d] % ", WEXITSTATUS(status));}
+                fprintf(stdout,"enseash [code:%d|%f ms] % ", WEXITSTATUS(status));}
             else if (WIFSIGNALED(status)) {
-                fprintf(stdout,"enseash [sign:%d] % ", WTERMSIG(status));}
+                fprintf(stdout,"enseash [sign:%d|%f] % ", WTERMSIG(status));}
         }
     }
 }
