@@ -44,6 +44,7 @@ We quit the shell with the exit code `0` if the entered command is `"exit"`.
 ## question4
 
 Display exit (or signal) code in the shell with the prompt.
+
 We need to call `fork()` to duplicate the program execution process, then we can retrieve
 the exit code with `WEXITSTATUS(status)` (or the signal code with `WTERMSIG(status)`) and display it.
 
@@ -52,16 +53,39 @@ the exit code with `WEXITSTATUS(status)` (or the signal code with `WTERMSIG(stat
 
     [...] //program exectution and duplication of process
 
-    while((fpid = wait(&status)) != -1) {
+    while((fpid = wait(&status)) != -1) {	//prompt
         if(WIFEXITED(status)) {
-            fprintf(stdout,"enseash [code:%d|%f ms] % ", WEXITSTATUS(status));}
+            fprintf(stdout,"enseash [code:%d] % ", WEXITSTATUS(status));}
         else if (WIFSIGNALED(status)) {
-            fprintf(stdout,"enseash [sign:%d|%f] % ", WTERMSIG(status));}
+            fprintf(stdout,"enseash [sign:%d] % ", WTERMSIG(status));}
     }
 
 ***
 ## question5
 
+Add the execution time of the previous command in the prompt. 
+
+We can use the `struct timespec` defined in `time.h`. It gives us the time with the seconds and the nanoseconds. We only need the nanoseconds this time because we only run simple and short programs.
+
+        struct timespec time;
+        double milli = 0;       //initialize milliseconds timer
+        while(1) {
+        
+        	[...]		//exectute program, duplicate process
+        
+        	if (clock_gettime(CLOCK_REALTIME, &time) == -1) { //clock_gettime error
+            		perror("clock gettime");
+            		return EXIT_FAILURE;
+        	}
+        	milli = (double) (time.tv_nsec - milli) / (double) 1000000L; //milliseconds timer update
+        	
+        	while((fpid = wait(&status)) != -1) {	//prompt
+        		if(WIFEXITED(status)) {
+            			fprintf(stdout,"enseash [code:%d|%6.0f ms] % ", WEXITSTATUS(status),milli);}
+        			else if (WIFSIGNALED(status)) {
+            			fprintf(stdout,"enseash [sign:%d|%6.0f ms] % ", WTERMSIG(status),milli);}
+    		}
+        }
 
 
 ***
