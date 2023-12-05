@@ -91,9 +91,8 @@ We can use the `struct timespec` defined in `time.h`. It gives us the time with 
 ## question6
 
 Treatment of commands with multiple arguments:
-We have to split the entered string`input` with `" "` as delimiter.
+We have to split the entered string `input` with `" "` as delimiter.
 
-        char* input;
         char* token;
         int argc = 1;
         char* argv[100];
@@ -104,8 +103,9 @@ We have to split the entered string`input` with `" "` as delimiter.
    
         /* walk through other arguments */
         while( token != NULL ) {
-            token = strtok(NULL, s);
+            token = strtok(NULL, " ");
             argv[argc] = token;
             argc++;
         }
 
+And then we have just to execute commands with those arguments, using `execlp()`.
