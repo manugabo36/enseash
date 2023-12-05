@@ -15,16 +15,16 @@ int main() {
     int status;
     pid_t fpid;
     char prompt[] = "enseash % ";
-    char tryAgain[] = "Try again\n";
+    char tryAgain[] = "Command not found, please try again.\n";
     char output[100];
     int ChildRun = 0;
     struct timespec begin, end;
     long millis;
 
+    write(1, prompt, strlen(prompt));
 
     while(1) {
         //write a different message depending on the input message
-        write(1, prompt, strlen(prompt));
         scanf("%s", input);
 
         if (strcmp(input, "fortune") == 0) {
@@ -57,8 +57,17 @@ int main() {
                     ChildRun = 1;
                 }
             } else {
-                // Unknown command inputted
-                write(1, tryAgain, strlen(tryAgain));
+                // other program command
+
+                char file[100] = "./";
+                strcat(file, input);
+                clock_gettime(CLOCK_MONOTONIC, &begin);
+                execlp(file, input, (char *) NULL);
+                fpid = fork();
+                if (fpid == 0){
+                    write(1, tryAgain, strlen(tryAgain));
+                    write(1, "enseash ", strlen("enseash "));
+                }
             }
         }
 
@@ -70,14 +79,17 @@ int main() {
             ChildRun = 0;
             if (WIFEXITED(status)) {
                 int exit_status = WEXITSTATUS(status);
-                sprintf(output, "enseash [code:%d|%ldms] % ", exit_status, millis);
+                sprintf(output, "enseash [code:%d|%ld ms] ", exit_status, millis);
                 write(1, output, strlen(output));
             }
             else if (WIFSIGNALED(status)) {
                 int exit_signal = WTERMSIG(status);
-                sprintf(output, "enseash [sign:%d|%ldms] % ", exit_signal, millis);
+                sprintf(output, "enseash [sign:%d|%ld ms] ", exit_signal, millis);
                 write(1, output, strlen(output));
             }
         }
+
+        write(1, "% ", strlen("% "));
+
     }
 }
