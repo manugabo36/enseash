@@ -97,15 +97,15 @@ We have to split the entered string `input` with `" "` as delimiter.
         int argc = 1;
         char* argv[100];
    
-        /* get the first argument */
+        // get the first argument
         token = strtok(input, " ");
         argv[0] = token;
    
-        /* walk through other arguments */
+        // walk through other arguments
         while( token != NULL ) {
             token = strtok(NULL, " ");
             argv[argc] = token;
             argc++;
         }
 
-And then we have just to execute commands with those arguments, using `execlp()`.
+And then we have just to execute commands with those arguments, using `execlp(argv[0],argv[0],...,(char *)NULL)`.
