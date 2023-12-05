@@ -88,7 +88,7 @@ We can use the `struct timespec` defined in `time.h`. It gives us the time with 
 
 
 ***
-## question6
+## question6 (not coded)
 
 Treatment of commands with multiple arguments:
 We have to split the entered string `input` with `" "` as delimiter.
