@@ -19,7 +19,7 @@ Three step to code:
 
 - execute the command: 
 
-We misunderstood the statement at first, and then we corrected that in the final version of question4.
+We misunderstood the statement at first, and then we corrected that in the final version of question5.
 
     char file[100] = "./";
     strcat(file,input);
@@ -70,7 +70,8 @@ We can use the `struct timespec` defined in `time.h`. It gives us the time with 
     struct timespec begin, end;
     long millis;       //initialize milliseconds timer
     while(1) {
-
+        
+            [...]       //case identification
     	clock_gettime(CLOCK_MONOTONIC, &begin);
             [...]		//exectute program, duplicate process
 
@@ -88,3 +89,23 @@ We can use the `struct timespec` defined in `time.h`. It gives us the time with 
 
 ***
 ## question6
+
+Treatment of commands with multiple arguments:
+We have to split the entered string`input` with `" "` as delimiter.
+
+        char* input;
+        char* token;
+        int argc = 1;
+        char* argv[100];
+   
+        /* get the first argument */
+        token = strtok(input, " ");
+        argv[0] = token;
+   
+        /* walk through other arguments */
+        while( token != NULL ) {
+            token = strtok(NULL, s);
+            argv[argc] = token;
+            argc++;
+        }
+
