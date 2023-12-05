@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/enseash.dir/Question5.c.o -o enseash 
